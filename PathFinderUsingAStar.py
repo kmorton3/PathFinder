@@ -4,7 +4,7 @@
 # H is the heuristic - estimated distance from the current node to
 # the end node, = a^2 + b^2
 
-__version__ = '0.1'
+__version__ = '0.2'
 __author__ = 'Keith Morton'
 
 openList = []
@@ -65,28 +65,34 @@ def a_star_pathing(board, start, end):
 
         # Find children
         for coord in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-            if (current_node.location[0] + coord[0] in range(len(board))
-                    and current_node.location[1] + coord[1] in range(len(board[0]))):
+            try:
+            # board[current_node.location[0] + coord[0]][current_node.location[1] + coord[1]]
+            # if (current_node.location[0] + coord[0] in range(len(board))
+            #         and current_node.location[1] + coord[1] in range(len(board[current_node.location[1]]))):
                 if board[current_node.location[0] + coord[0]][current_node.location[1] + coord[1]] != 1:
-                    child_node = (Node((current_node.location[0] + coord[0],
-                                        current_node.location[1] + coord[1]), current_node))
-                    child_node.g = current_node.g + 1
-                    child_node.h = ((ending_node.location[0] - child_node.location[0] ** 2)
-                                    + (ending_node.location[1] - child_node.location[1] ** 2))
-                    child_node.f = child_node.g + child_node.h
-                    if not child_in_list(child_node, openList):
-                        if not child_in_list(child_node, closedList):
-                            openList.append(child_node)
+                    if (current_node.location[0] + coord[0]) >= 0 and (current_node.location[1] + coord[1]) >= 0:
+                        child_node = (Node((current_node.location[0] + coord[0],
+                                            current_node.location[1] + coord[1]), current_node))
+                        child_node.g = current_node.g + 1
+                        child_node.h = ((ending_node.location[0] - child_node.location[0] ** 2)
+                                        + (ending_node.location[1] - child_node.location[1] ** 2))
+                        child_node.f = child_node.g + child_node.h
+                        if not child_in_list(child_node, openList):
+                            if not child_in_list(child_node, closedList):
+                                openList.append(child_node)
+            except IndexError:
+                pass
+    return None
 
 
 def main():
 
     board = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 1],
         [0, 0, 0, 0, 1, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0],
         [0, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -94,12 +100,15 @@ def main():
     ]
 
     start = (8, 0)
-    end = (4, 8)
+    end = (3, 6)
 
     path = a_star_pathing(board, start, end)
-    print('Made final path')
-    for coord in path:
-        print(coord)
+    if path is None:
+        print('Could not find a path')
+    else:
+        print('Made final path')
+        for coord in path:
+            print(coord)
 
 
 if __name__ == '__main__':
